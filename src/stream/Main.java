@@ -29,8 +29,18 @@ public class Main {
         List<Integer> integersTwo = List.of(1, 2, 3, 4, 5, 6);
 
         integersTwo.stream()
-                .filter(number -> number % 2 == 0)
-                .forEach(number -> System.out.println(number));
+                .filter(new Predicate<Integer>() {
+                    @Override
+                    public boolean test(Integer integer) {
+                        return integer % 2 == 0;
+                    }
+                })
+                .forEach(new Consumer<Integer>() {
+                    @Override
+                    public void accept(Integer integer) {
+                        System.out.println(integer);
+                    }
+                });
         System.out.println("----------------------------------------");
 
         List<String> strings = List.of("abc", "bca", "yaw");
@@ -167,17 +177,13 @@ public class Main {
         System.out.println("----------------------------------------");
         Set<String> names7 = Set.of("Ania", "Iza");
 
-        Predicate<String> predicate = name -> name.startsWith("Z");
-
-        Predicate<String> predicate2 = new Predicate<String>() {
-            @Override
-            public boolean test(String name) {
-                return name.startsWith("Z");
-            }
-        };
-
         Optional<String> optional1 = names7.stream()
-                .filter(predicate)
+                .filter(new Predicate<String>() {
+                    @Override
+                    public boolean test(String name) {
+                        return name.startsWith("Z");
+                    }
+                })
                 .findAny();
         System.out.println(optional1.isEmpty());
 
@@ -213,8 +219,18 @@ public class Main {
         System.out.println("----------------------------------------");
         List<String> names11 = List.of("Zuza", "Iza", "Ania");
         List<Human> collect2 = names11.stream()
-                .map(name -> new Human(name))
-                .sorted((humanOne, humanTwo) -> humanOne.getName().compareTo(humanTwo.getName()))
+                .map(new Function<String, Human>() {
+                    @Override
+                    public Human apply(String name) {
+                        return new Human(name);
+                    }
+                })
+                .sorted(new Comparator<Human>() {
+                    @Override
+                    public int compare(Human humanOne, Human humanTwo) {
+                        return humanOne.getName().compareTo(humanTwo.getName());
+                    }
+                })
                 .collect(Collectors.toList());
         System.out.println(collect2);
 
@@ -282,8 +298,30 @@ public class Main {
                 .sorted((humanOne, humanTwo) -> humanOne.getName().compareTo(humanTwo.getName()))
                 .collect(Collectors.toList());
         System.out.println(collect2);
+        System.out.println("----------------------------------------");
 
+        List<Integer> integers4 = List.of(1, 2, 3, 4, 5, 6);
 
+        integersTwo.stream()
+                .filter(integer -> integer % 2 == 0)
+                .forEach(integer -> System.out.println(integer));
+
+        System.out.println("----------------------------------------");
+        System.out.println("Te zapisy są tożsame: predicate3 jest tym samym co predicate4");
+
+        Predicate<String> predicate3 = name -> name.startsWith("Z");
+        Predicate<String> predicate4 = new Predicate<String>() {
+            @Override
+            public boolean test(String name) {
+                return name.startsWith("Z");
+            }
+        };
+
+        List<String> names13 = List.of("Ania", "Iza", "Zuza");
+        names13.stream()
+                .filter(predicate3)
+//                .filter(predicate4) <- też tak możemy a wynik będzie ten sam
+                .forEach(System.out::println);
     }
 
     static class Human {
